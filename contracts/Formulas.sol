@@ -5,7 +5,7 @@ contract FinancialFormulas {
     // USED TO KEEP DECIMAL PLACE PRECISION
     uint public constant d = 1000000000;
 
-        function calculateSpcaFactor( uint rate, uint n, uint precision) private returns (uint) {
+        function calculateSpcaFactor( uint rate, uint n, uint precision) public returns (uint) {
           uint s = 0;
           uint N = 1;
           uint B = 1;
@@ -28,7 +28,8 @@ contract FinancialFormulas {
         // FV(interest_rate, number_payments, payment, PV, Type)
         // TODO: INCLUDE PAYMENT IN CALCULATION
         function fv(uint _rate, uint _nper, uint _pmt, uint _pv, bool _loanType) public returns (uint) {
-                uint fv = calculateSpcaFactor(rate, _nper, 20) * pv / d;
+            uint spcaf = calculateSpcaFactor(_rate, _nper, 20);
+            uint fv = spcaf * _pv / d;
             return fv;
         }
 
@@ -49,9 +50,9 @@ contract FinancialFormulas {
         }
 
         // PPMT
-        function ppmt(uint _rate, uint _period, uint nper, uint _pv, uint _fv, bool _loanType) public returns (uint) {
-            uint payment = pmt( _rate, nper, _pv, _fv, false );
-            uint principalPayment = payment - ipmt(_rate, _period, nper, _pv, _fv, false);
+        function ppmt(uint _rate, uint _period, uint _nper, uint _pv, uint _fv, bool _loanType) public returns (uint) {
+            uint payment = pmt( _rate, _nper, _pv, _fv, false );
+            uint principalPayment = payment - ipmt(_rate, _period, _nper, _pv, _fv, false);
             return principalPayment;
         }
 

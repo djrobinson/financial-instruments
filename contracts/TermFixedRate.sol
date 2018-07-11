@@ -23,9 +23,10 @@ contract TermFixedRate {
     uint public amountTilActivation;
     uint public testPeriodLength;
     bool public completeFlag;
+    address public formulasAddress;
 
 
-    constructor(uint _requestedRate, uint _requestedAmount, uint _lengthInPeriods, uint _testPeriodLength, address formulasAddress) public payable {
+    constructor(uint _requestedRate, uint _requestedAmount, uint _lengthInPeriods, uint _testPeriodLength, address _formulasAddress) public payable {
         dateRequested = now;
         requestedRate = _requestedRate;
         requestedAmount = _requestedAmount;
@@ -33,6 +34,7 @@ contract TermFixedRate {
         amountTilActivation = _requestedAmount;
         testPeriodLength = _testPeriodLength;
         borrower = msg.sender;
+        formulasAddress = _formulasAddress;
         FinancialFormulas ff = FinancialFormulas(formulasAddress);
         payment = ff.pmt(requestedRate, lengthInPeriods, requestedAmount, 0, false);
     }
@@ -64,7 +66,10 @@ contract TermFixedRate {
         currentPeriodIteration = (now - dateActivated) / testPeriodLength + 1;
 
         if (paymentPeriodIterator <= currentPeriodIteration) {
-            // amountToInterest = calculateInterestPayment();
+            FinancialFormulas ff = FinancialFormulas(formulasAddress);
+            uint nper = lengthInPeriods - currentPeriodIteration;
+            // Always calculate amount to interest on present period's pv
+            amountToInterest = ff.ipmt(requestedRate, 0, nper, principalBalance, 0, false);
         }
         // Need to clean up vars in here to make less confusing
         uint payoffValue = principalBalance + amountToInterest;
