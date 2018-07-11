@@ -1,5 +1,7 @@
 pragma solidity ^0.4.17;
 
+import {FinancialFormulas} from "./Formulas.sol";
+
 contract TermFixedRate {
     address public borrower;
     uint public dateRequested;
@@ -23,15 +25,16 @@ contract TermFixedRate {
     bool public completeFlag;
 
 
-    constructor(uint _requestedRate, uint _requestedAmount, uint _lengthInPeriods, uint _testPeriodLength) public payable {
+    constructor(uint _requestedRate, uint _requestedAmount, uint _lengthInPeriods, uint _testPeriodLength, address formulasAddress) public payable {
         dateRequested = now;
         requestedRate = _requestedRate;
         requestedAmount = _requestedAmount;
         lengthInPeriods = _lengthInPeriods;
-        amountTilActivation = requestedAmount;
+        amountTilActivation = _requestedAmount;
         testPeriodLength = _testPeriodLength;
         borrower = msg.sender;
-        // calculatePayment();
+        FinancialFormulas ff = FinancialFormulas(formulasAddress);
+        payment = ff.pmt(requestedRate, lengthInPeriods, requestedAmount, 0, false);
     }
 
     function contribute() public payable {
