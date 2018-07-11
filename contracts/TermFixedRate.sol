@@ -1,6 +1,6 @@
 pragma solidity ^0.4.17;
 
-contract Loan {
+contract TermFixedRate {
     address public borrower;
     uint public dateRequested;
     uint public dateActivated;
@@ -23,7 +23,7 @@ contract Loan {
     bool public completeFlag;
 
 
-    function Loan(uint _requestedRate, uint _requestedAmount, uint _lengthInPeriods, uint _testPeriodLength) public payable {
+    constructor(uint _requestedRate, uint _requestedAmount, uint _lengthInPeriods, uint _testPeriodLength) public payable {
         dateRequested = now;
         requestedRate = _requestedRate;
         requestedAmount = _requestedAmount;
